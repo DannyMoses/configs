@@ -1,0 +1,13 @@
+#! /bin/bash
+
+#This is the setup script for my .vimrc and .bashrc
+
+echo "removing ~/.bashrc..."
+rm ~/.bashrc
+mv .bashrc ~/.bashrc
+
+echo "removing ~/.vimrc..."
+rm ~/.vimrc
+mv .vimrc ~/.vimrc
+
+echo "config complete"
