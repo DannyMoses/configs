@@ -10,4 +10,7 @@ echo "removing ~/.vimrc..."
 rm ~/.vimrc
 mv .vimrc ~/.vimrc
 
+echo "adding jellybeans..."
+mv .vim/colors/jellybeans.vim ~/.vim/colors/
+
 echo "config complete"
