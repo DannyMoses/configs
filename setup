@@ -2,6 +2,10 @@
 
 #This is the setup script for my .vimrc and .bashrc
 
+echo "creating backups..."
+cp ~/.bashrc bashrc.bak
+cp ~/.vimrc vimrc.bak
+
 echo "removing ~/.bashrc..."
 rm ~/.bashrc
 cp .bashrc ~/.bashrc
