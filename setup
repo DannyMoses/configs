@@ -17,8 +17,9 @@ cp .vimrc ~/.vimrc
 echo "adding jellybeans..."
 cp .vim/colors/jellybeans.vim ~/.vim/colors/
 
-echo "installing archey..."
-sudo cp archey /usr/bin/
+echo "installing screenfetch..."
+chmod +x screenfetch
+sudo cp screenfetch /usr/bin/
 
 echo "config complete"
 
