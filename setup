@@ -15,7 +15,9 @@ rm ~/.vimrc
 cp .vimrc ~/.vimrc
 
 echo "adding jellybeans..."
-cp .vim/colors/jellybeans.vim ~/.vim/colors/
+mkdir ~/.vim/
+mkdir ~/.vim/colors
+cp .vim/colors/jellybeans.vim ~/.vim/colors/jellybeans.vim
 
 echo "installing screenfetch..."
 chmod +x screenfetch
