@@ -246,7 +246,7 @@ fi
 #----- CUSTOM STARTS HERE ------ CUSTOM STARTS HERE ------ CUSTOM STARTS HERE ------ CUSTOM STARTS HERE ------ CUSTOM STARTS HERE ------ CUSTOM STARTS HERE
 ######################################################################################################################################################
 
-archey
+screenfetch
 
 
 
@@ -2360,25 +2360,25 @@ function proceed_sudo() { sudor_command="`HISTTIMEFORMAT=\"\" history 1 | sed -r
 # To show Apt Log History			 #
 ##################################################
 
-function apt-history() {
-      case "$1" in
-        install)
-              cat /var/log/dpkg.log | grep 'install '
-              ;;
-        upgrade|remove)
-              cat /var/log/dpkg.log | grep $1
-              ;;
-        rollback)
-              cat /var/log/dpkg.log | grep upgrade | \
-                  grep "$2" -A10000000 | \
-                  grep "$3" -B10000000 | \
-                  awk '{print $4"="$5}'
-              ;;
-        *)
-              cat /var/log/dpkg.log
-              ;;
-      esac
-}
+#function apt-history() {
+ #     case "$1" in
+  #      install)
+   #           cat /var/log/dpkg.log | grep 'install '
+    #          ;;
+     #   upgrade|remove)
+      #        cat /var/log/dpkg.log | grep $1
+       #       ;;
+        #rollback)
+         #     cat /var/log/dpkg.log | grep upgrade | \
+          #        grep "$2" -A10000000 | \
+           #       grep "$3" -B10000000 | \
+            #      awk '{print $4"="$5}'
+             # ;;
+        #*)
+         #     cat /var/log/dpkg.log
+          #    ;;
+      #esac
+#}
 
 
 
@@ -7330,7 +7330,7 @@ type "$1" | sed '1d' | tr -d "\n" | tr -s '[:space:]'; echo
 # What package does that command come from?	 #
 ##################################################
 
-function cmdpkg() { PACKAGE=$(dpkg -S $(which $1) | cut -d':' -f1); echo "[${PACKAGE}]"; dpkg -s "${PACKAGE}" ;}
+#function cmdpkg() { PACKAGE=$(dpkg -S $(which $1) | cut -d':' -f1); echo "[${PACKAGE}]"; #dpkg -s "${PACKAGE}" ;}
 
 
 
@@ -8788,23 +8788,23 @@ function debextract()
 
 
 ###### deb remaking- easily remakes a debian file after "debextract" (not authentically or correct according to Launchpad standards)
-function debremaker()
-{
-    read -sn 1 -p "Make sure you have this function directed to the original debian file (previously extracted from and made into a folder with \"debextract\"; otherwise, it will fail (Note: This will take a minute): Press any key to continue...
-"
-    # Set IFS so that it won't consider spaces as entry separators.  Without this, spaces in file/folder names can make the loop go wacky.
-    IFS=$'\n'
-    NEWDIRNAME=${1%.*}
-    FILENAME=${1##*/}
-    NAME=${1##*/.*}
-    cd "$NEWDIRNAME"
-    rm -fv -R "$1"
-    find . -type f ! -regex '.*\.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > DEBIAN/md5sums
-    cd ..
-    dpkg-deb -b "$NEWDIRNAME"
-    rm -rf "$NEWDIRNAME"
-    echo "Finished Successfully"
-}
+#function debremaker()
+#{
+ #   read -sn 1 -p "Make sure you have this function directed to the original debian file #(previously extracted from and made into a folder with \"debextract\"; otherwise, it will #fail (Note: This will take a minute): Press any key to continue...
+#"
+    # Set IFS so that it won't consider spaces as entry separators.  Without this, spaces in #file/folder names can make the loop go wacky.
+ #   IFS=$'\n'
+  #  NEWDIRNAME=${1%.*}
+   # FILENAME=${1##*/}
+    #NAME=${1##*/.*}
+    #cd "$NEWDIRNAME"
+    #rm -fv -R "$1"
+    #find . -type f ! -regex '.*\.hg.*' ! -regex '.*?debian-binary.*' ! -regex '.*?DEBIAN.*' -printf '%P ' | xargs md5sum > DEBIAN/md5sums
+   # cd ..
+   # dpkg-deb -b "$NEWDIRNAME"
+    #rm -rf "$NEWDIRNAME"
+    #echo "Finished Successfully"
+#}
 
 
 
@@ -12208,124 +12208,6 @@ function map-files() { find $1 -name $2 -exec ${@:3} {} \ ; }
 # and repositories in a deb meta package	 #
 ##################################################
 
-function meta-backup()
-{
-## Written by Arjan van Lent aka socialdefect ## VERSION: 2.1 ## Modified by Inameiname
-DIALOG1="Did you enable extra repositories or PPAs on this system?. If you have no idea what this is just enter no"
-DIALOG2="Your backup has been created succesfully"
-DIALOG3="Something went wrong. Type bash -x meta-backup in a terminal to debug"
-DIALOG4="Would you like to use the backup for a distribution upgrade?"
-DIALOG5="Enter the codename of the distribution you'd like to upgrade to. eg. sid or maverick"
-DIALOG6="Where woud you like to save your backup files? Enter full path. eg /home/username/backups"
-mkdir -p /tmp/meta-backup/my-meta-backup/DEBIAN						## creating build directories
-  dialog --title "Meta-backup" --yesno "$DIALOG1" 8 40					## repository dialog ## question add repo's
-  dialog --title "Meta-backup" --infobox "..." 8 40
-if [ $? = 0 ] ; then
-  mkdir -p /tmp/meta-backup/my-repo-backup/etc/apt/sources.list.d
-  mkdir /tmp/meta-backup/my-repo-backup/DEBIAN
-  cp -R /etc/apt/sources.list.d/* /tmp/meta-backup/my-repo-backup/etc/apt/sources.list.d/
-  cp -R /etc/apt/sources.list /tmp/meta-backup/my-repo-backup/etc/apt/
-fi
-											## create the control file for the repo-backup
-echo 'Section: misc
-Priority: optional
-Package: my-repo-backup
-Version: 2.1
-Maintainer: meta-backup
-Depends:
-Architecture: all
-Description: Repository/PPA backup created by meta-backup.
- Repository/PPA backup created by meta-backup. This package can be used to install all repositories and PPAs that are installed on the computer where the backup is made.' >> /tmp/meta-backup/my-repo-backup/DEBIAN/control
-											## create the preinst file for the repo-backup
-echo '#!/bin/sh
-set -e
-# Backup repo config
-mv /etc/apt/sources.list /etc/apt/sources.list.old
-mv /etc/apt/sources.list.d /etc/apt/sources.list.d.old' >> /tmp/meta-backup/my-repo-backup/DEBIAN/preinst
-chmod +x /tmp/meta-backup/my-repo-backup/DEBIAN/preinst
-											## create the postinst file for the repo-backup
-echo '#!/bin/sh
-set -e
-# Pubkeys (to generate this large key, which is all of them in one: sudo apt-key exportall > /tmp/repokeys.key)
-if [ -f /tmp/repokeys.key ];then
-	rm /tmp/repokeys.key
-fi
-sudo cat > "/tmp/repokeys.key" <<"End-of-message"' >> /tmp/meta-backup/my-repo-backup/DEBIAN/postinst
-  ## get the repository keys
-apt-key exportall >> /tmp/meta-backup/my-repo-backup/DEBIAN/postinst
-echo 'End-of-message
-if which sudo apt-key >> /dev/null; then
-	if sudo apt-key add "/tmp/repokeys.key"; then
-		echo "OK - repokeys key was installed"
-	else
-		echo "ERROR: there was a problem installing the repokeys-key"
-	fi
-fi
-sudo rm -fv "/tmp/repokeys.key"' >> /tmp/meta-backup/my-repo-backup/DEBIAN/postinst
-chmod +x /tmp/meta-backup/my-repo-backup/DEBIAN/postinst
-											## create the postrm file for the repo-backup
-echo '#!/bin/sh
-set -e
-# Restore repo config
-mv /etc/apt/sources.list.old /etc/apt/sources.list
-mv /etc/apt/sources.list.d.old /etc/apt/sources.list.d' >> /tmp/meta-backup/my-repo-backup/DEBIAN/postrm
-chmod +x /tmp/meta-backup/my-repo-backup/DEBIAN/postrm
-dialog --title "Meta-backup" --yesno "$DIALOG4" 8 40					## Distupgrade feature
-  dialog --title "Meta-backup" --infobox "..." 8 40
-if [ $? = 0 ] ; then
-    dialog --title "Meta-backup" --inputbox "$DIALOG5" 8 40 2> /tmp/meta-backup/upgrade
-    UPGRADE=`cat /tmp/meta-backup/upgrade`
-    dialog --title "Meta-backup" --infobox "..." 8 40
-fi
-if [ $UPGRADE = 0 ] ; then
-  MYDIST=`lsb_release -cs`
-  sed 's/$MYDIST/$UPGRADE/' /tmp/meta-backup/myrepo-backup/etc/apt/sources.list
-  sed 's/$MYDIST/$UPGRADE/' /tmp/meta-backup/myrepo-backup/etc/apt/sources.list.d/*
-fi											## end dist upgrade feature
-  DEPS=`aptitude search -F %p ~i --disable-columns | sed 's/$/,/' | tr '\n\r' ' ' | sed 's/, $//'`	## get list of inst. packages to fill DEPS variable
-											## create the control file for the meta-backup
-echo "Section: misc
-Priority: optional
-Package: my-meta-backup
-Version: 2.1
-Maintainer: meta-backup
-Depends: $DEPS
-Architecture: all
-Description: Personal system backup created by meta-backup
- Personal system backup created by meta-backup. This package can be used to install all applications that are installed on the computer where the backup is made. Can be used on all systems using the same base system version as used on the backup machine." >> /tmp/meta-backup/my-meta-backup/DEBIAN/control
-cd /tmp/meta-backup && dpkg --build my-meta-backup					## build and save the package(s)
-if [ $? = 0 ] ; then
-    cd /tmp/meta-backup && dpkg --build my-repo-backup
-fi
-ls /tmp/meta-backup/my-meta-backup.deb							## finish backup
-  if [ $? = 0 ] ; then
-    ERROR=no
-    else ERROR=yes
-  fi
-ls /tmp/meta-backup/my-repo-backup.deb
-  if [ $? = 0 ] ; then
-    ERROR=no
-  else ERROR=yes
-  fi
-dialog --title "Meta-backup" --inputbox "$DIALOG6" 8 40 2> /tmp/meta-backup/save	## move the debs to selected location
-    SAVE=`cat /tmp/meta-backup/save`
-    dialog --title "Meta-backup" --infobox "..." 8 40
-    ls $SAVE
-  if [ $? = 0 ] ; then
-    mv /tmp/meta-backup/*.deb $SAVE
-    chmod 777 $SAVE/my-*-backup.deb
-  else
-    mkdir -p $SAVE
-    mv /tmp/meta-backup/*.deb $SAVE
-    chmod -R 777 $SAVE
-  fi
-if [ $ERROR = no ] ; then								## Display exit message
-  dialog --title "Meta-backup" --infobox "$DIALOG2" 8 40
- else
-  dialog --title "Meta-backup" --infobox "$DIALOG3" 8 40
-fi
-rm -rf /tmp/meta-backup									## cleaning up
-}
 
 
 
@@ -13122,23 +13004,6 @@ function own() { chown -R "$2":"$2" ${1:-.}; }
 # Hold/Unhold packages				 #
 ##################################################
 
-function packagehold()
-{
-echo -n "Please enter the package you wish to put a hold on:
-"
-read progID
-echo "$progID hold" |sudo dpkg --set-selections
-}
-
-
-
-function packageunhold()
-{
-echo -n "Please enter the package you wish to remove the hold on:
-"
-read progID
-echo "$progID install" |sudo dpkg --set-selections
-}
 
 
 
@@ -13147,10 +13012,7 @@ echo "$progID install" |sudo dpkg --set-selections
 # official repos currently on system		 #
 ##################################################
 
-function packagelistdl()
-{
-sudo dpkg --get-selections | awk '{ print $1};' | while read package; do apt-cache show "$package"| wget -c 'http://ae.archive.ubuntu.com/ubuntu/'`sed -ne '/^Filename/s/^Filename: //p'`; done
-}
+
 
 
 
@@ -14049,9 +13911,6 @@ mplayer -cache 128 -tv driver=v4l2:width=176:height=177 -vo xv tv:// -noborder -
 
 
 
-###### search Debian (or Ubuntu) package database (apt) using dpkg
-#   $1 = search term (package name)
-function sp() { apt-cache search "$1" | grep -i "$1"; }  # search all available
 
 
 
@@ -16050,7 +15909,7 @@ alias root='sudo bash -l'								# generic shortcut for switching to root user d
 # alias root='sudo -i'									# generic shortcut for switching to root user depending on system
 # alias root='su -'									# generic shortcut for switching to root user depending on system
 alias scx='screen -x'
-alias sdi='sudo dpkg -i'
+alias yy='yaourt'
 alias se='vi ~/.screenrc'
 alias sg='sudo geany'
 alias shutdown='sudo shutdown -h now'							# proper restart
@@ -16110,21 +15969,6 @@ alias yuaort='yaourt'
 alias yuoart='yaourt'
 
 
-
-##################################################
-# Computer cleanup				 #
-##################################################
-
-alias adobecleanup='sudo rm -fr ~/.adobe && sudo rm -fr ~/.macromedia && sudo rm -fr /root/.adobe && sudo rm -fr /root/.macromedia'
-alias bleachbitcleanup='sudo bleachbit --clean --preset'
-alias cachecleanup='sudo rm -fr /root/.cache/* && sudo rm -fr ~/.cache/*'				# cleanup cache
-alias cleanup="sudo apt-get -y autoclean && sudo apt-get -y autoremove && sudo apt-get -y clean && sudo apt-get -y remove && sudo aptitude -y purge `dpkg --get-selections | grep deinstall | awk '{print $1}'` && sudo deborphan | xargs sudo apt-get -y remove --purge && sudo bleachbit --clean --preset && find ~ -type f -name ".DS_Store" -exec rm {} \; && find ~ -type f -name "Thumbs.db" -exec rm {} \; && find ~ -type f -regex ".*~" -exec rm {} \; && sudo rm -rvf ~/.adobe ~/.adobe/Acrobat/*/Cache/ ~/.adobe/Acrobat/*/Preferences/reader_prefs ~/.adobe/Flash_Player/AssetCache/ ~/.amsn/*/*/cache/ ~/.amsn/*/logs/ ~/.amsn/*/voiceclips/ ~/.amsn/*/webcam/ ~/.aMule/logfile ~/.aMule/logfile.bak ~/.aMule/Temp/ ~/.azureus/active/*.bak ~/.azureus/ipfilter.cache ~/.azureus/*.log ~/.azureus/logs/ ~/.azureus/tmp/ ~/.bash_history ~/.beagle/Indexes/ ~/.beagle/Log/ ~/.beagle/TextCache/ ~/.cache/ ~/.cache/* ~/.cache/audacious/thumbs/ ~/.cache/chromium/ ~/.cache/gedit/gedit-metadata.xml ~/.cache/google-chrome/ ~/.cache/vlc/ ~/.compiz/session/ ~/.config/audacious/log ~/.config/audacious/playlist.xspf ~/.config/chromium/Default/Bookmarks.bak ~/.config/chromium/Default/Cookies ~/.config/chromium/Default/Current\ Session ~/.config/chromium/Default/Current\ Tabs ~/.config/chromium/Default/databases/Databases.db ~/.config/chromium/Default/databases/http*/ ~/.config/chromium/Default/Extension\ Cookies ~/.config/chromium/Default/Favicons/ ~/.config/chromium/Default/*History* ~/.config/chromium/Default/*History*/ ~/.config/chromium/Default/*-journal ~/.config/chromium/Default/Last\ Session ~/.config/chromium/Default/Last\ Tabs ~/.config/chromium/Default/Local\ Storage/*localstorage ~/.config/chromium/Default/Thumbnails* ~/.config/chromium/Default/Top\ Sites ~/.config/chromium/Default/Visited\ Links ~/.config/chromium/Default/Web\ Data/chrome.autofill ~/.config/chromium/Default/Web\ Data/chrome.keywords ~/.config/chromium/Local\ State/HostReferralList.json ~/.config/chromium/Local\ State/StartupDNSPrefetchList.json ~/.config/compiz/ ~/.config/emesene*/*/cache/ ~/.config/emesene*/*/log* ~/.config/emesene*/*/logs/ ~/.config/google-chrome/Default/Cookies ~/.config/google-chrome/Default/Current\ Session ~/.config/google-chrome/Default/Current\ Tabs ~/.config/google-chrome/Default/databases/Databases.db ~/.config/google-chrome/Default/databases/http*/ ~/.config/google-chrome/Default/Extension\ Cookies ~/.config/google-chrome/Default/Favicons/ ~/.config/google-chrome/Default/*History* ~/.config/google-chrome/Default/History/ ~/.config/google-chrome/Default/Last\ Session ~/.config/google-chrome/Default/Last\ Tabs ~/.config/google-chrome/Default/Local\ Storage/http*localstorage ~/.config/google-chrome/Default/Preferences/dns_prefetching.json ~/.config/google-chrome/Default/Thumbnails* ~/.config/google-chrome/Default/Top\ Sites ~/.config/google-chrome/Default/Visited\ Links ~/.config/google-chrome/Default/Web\ Data/chrome.autofill ~/.config/google-chrome/Default/Web\ Data/chrome.keywords ~/.config/google-chrome/Local\ State/HostReferralList.json ~/.config/google-chrome/Local\ State/StartupDNSPrefetchList.json ~/.config/gpodder/cache/ ~/.config/menus/*.menu.undo-* ~/.config/real/rpcookies.txt ~/.config/Screenlets/*.log ~/.config/transmission/blocklists/ ~/.config/transmission/resume/ ~/.easytag/easytag.log ~/.elinks/cookies ~/.elinks/*hist /etc/apt/sources.list.d/* ~/.evolution/cache/ ~/.exaile/cache/ ~/.exaile/covers/ ~/.exaile/exaile.log ~/.exaile/podcasts/ ~/.filezilla/recentservers.xml ~/.gconf/apps/gnome-settings/gnome-panel/%gconf.xml ~/.gconf/apps/gnome-settings/gnome-search-tool/%gconf.xml ~/.gftp/cache/ ~/.gftp/gftp.log ~/.gimp-*/tmp/ ~/.gl-117/logfile.txt ~/.gnome2/epiphany/ephy-favicon-cache.xml ~/.gnome2/epiphany/ephy-history.xml ~/.gnome2/epiphany/favicon_cache/ ~/.gnome2/epiphany/mozilla/epiphany/Cache/ ~/.gnome2/epiphany/mozilla/epiphany/cookies* ~/.gnome2/gedit-metadata.xml ~/.gnome2/rhythmbox/jamendo/ ~/.gnome2/rhythmbox/magnatune/ ~/.googleearth/Cache/dbCache.* ~/.googleearth/Temp/ ~/.goutputstream-* ~/.hippo_opensim_viewer/cache/ ~/.hippo_opensim_viewer/logs/ ~/.icedteaplugin/cache/ ~/.java/deployment/cache/ ~/.kde/cache-*/ ~/.kde*/share/apps/gwenview/recent*/*rc ~/.kde/share/apps/kcookiejar/cookies ~/.kde/share/apps/konqueror/autosave/ ~/.kde/share/apps/konqueror/closeditems_saved ~/.kde/share/apps/konqueror/konq_history ~/.kde*/share/apps/RecentDocuments/*.desktop ~/.kde/share/config/konq_history ~/.kde/tmp-*/ ~/.kde/tmp-localhost.localdomain/ ~/.libreoffice/*/*/*/cache/ ~/.libreoffice/*/*/registry/data/org/openoffice/Office/Common.xcu ~/.liferea_*/cache/ ~/.liferea_*/mozilla/liferea/Cache/ ~/.liferea_*/mozilla/liferea/cookies.sqlite ~/.links2/links.his ~/.local/share/gvfs-metadata/*.log ~/.local/share/gvfs-metadata/uuid* ~/.local/share/Trash/ ~/.local/share/Trash/* ~/.luckyBackup/logs/ ~/.luckyBackup/snaps/ ~/.macromedia ~/.macromedia/Flash_Player/ ~/.mc/filepos ~/.mc/history ~/.miro/icon-cache/ ~/.miro/miro-*log* ~/.miro/mozilla/Cache/ ~/.mozilla/default/Cache/ ~/.mozilla/extensions ~/.mozilla/firefox/Crash\ Reports/ ~/.mozilla/firefox/*.default/adblockplus/patterns-backup* ~/.mozilla/firefox/*.default/bookmarkbackups/ ~/.mozilla/firefox/*.default/Cache/ ~/.mozilla/firefox/*.default/cookies.* ~/.mozilla/firefox/*.default/downloads.sqlite ~/.mozilla/firefox/*.default/formhistory.sqlite ~/.mozilla/firefox/*.default/history.dat ~/.mozilla/firefox/*.default/minidumps/ ~/.mozilla/firefox/*.default/mozilla-media-cache/ ~/.mozilla/firefox/*.default/OfflineCache/ ~/.mozilla/firefox/*.default/reminderfox/*.bak* ~/.mozilla/firefox/*.default/sessionstore.* ~/.mozilla/firefox/*.default/startupCache/ ~/.mozilla/firefox/*.default/webappsstore.sqlite ~/.mozilla/seamonkey/*/Cache/ ~/.mozilla/seamonkey/*.default/cookies.sqlite ~/.mozilla/seamonkey/*.default/downloads.sqlite ~/.mozilla/seamonkey/*.default/urlbarhistory.sqlite ~/.mozilla/*/*.slt/chatzilla/logs/*log ~/.mozilla/*/*.slt/cookies.txt ~/.mozilla/*/*.slt/history.dat ~/.mozilla-thunderbird/*.default/signons.txt ~/.nautilus/metafiles/*/*.xml ~/.nautilus/saved-session-?????? ~/.nexuiz/data/dlcache/ ~/.ntrc_*/cookies.txt ~/.ntrc_*/history* ~/.openoffice.org/*/*/*/cache/ ~/.openoffice.org/*/*/registry/data/org/openoffice/Office/Common.xcu ~/.opera/*cache*/ ~/.opera/cookies4.dat ~/.opera/download.dat ~/.opera/global.dat ~/.opera/*history* ~/.opera/icons/ ~/.opera/pstorage/ ~/.opera/sessions/ ~/.opera/temporary_downloads/ ~/.opera/thumbnails/ ~/.opera/vlink4.dat ~/.opera/vps/????/md.dat ~/.purple/icons/ ~/.purple/logs/ ~/.recently-used.xbel ~/.recoll/xapiandb/ /root/.adobe /root/.cache/* /root/.local/share/Trash/* /root/.macromedia /root/.thumbnails/* /root/.Trash ~/.secondlife/cache/ ~/.secondlife/logs/ ~/.Skype/*/chatmsg[0-9]*.dbb ~/.Skype/*/chatsync/*/*.dat ~/.sw35/swiftweasel/*/Cache/ ~/.synaptic/log/ ~/.thumbnails/ ~/.thumbnails/* ~/.thunderbird/*.default/Cache/ ~/.thunderbird/*.default/cookies.sqlite ~/.thunderbird/*.default/signons.sqlite ~/.thunderbird/*.default/signons.txt ~/.thunderbird/default/*.slt/Cache/ ~/.thunderbird/default/*.slt/cookies.sqlite ~/.thunderbird/default/*.slt/signons3.txt ~/.thunderbird/default/*.slt/signons.sqlite ~/.thunderbird/default/*.slt/signons.txt ~/.thunderbird/Profiles/*.default/Cache/ ~/.thunderbird/Profiles/*.default/cookies.sqlite ~/.thunderbird/Profiles/*.default/signons.sqlite ~/.Trash ~/.tremulous/servercache.dat /var/backups/ /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/tmp/ ~/.viminfo ~/.wine/drive_c/winetrickstmp/ ~/.winetrickscache/ ~/.xbmc/addons/Navi-X/cache/images/* ~/.xbmc/addons/packages/* ~/xbmc*.log ~/.xbmc/userdata/Database/Textures* ~/.xbmc/userdata/Thumbnails/* ~/.xchat2/logs/*log ~/.xchat2/scrollback/ ~/.xchat2/xchatlogs/*log ~/.xine/catalog.cache ~/.xsession-errors ~/.xsession-errors.old"
-alias configpurge="sudo aptitude -y purge `dpkg --get-selections | grep deinstall | awk '{print $1}'`"	# purge configuration files of removed packages on debian systems
-alias kernelcleanup="dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | xargs sudo apt-get -y purge"											# remove all unused Linux Kernel headers, images & modules
-alias orphaned='sudo deborphan | xargs sudo apt-get -y remove --purge'
-alias thumbnailcleanup='sudo rm -fr /root/.thumbnails/* && sudo rm -fr ~/.thumbnails/*'
-alias tp='trash-put'											# sends files to trash instead of perm deleting w/rm
-alias trash='sudo rm -fr ~/.local/share/Trash/* && sudo rm -fr /root/.local/share/Trash/* && sudo rm -fr /root/.Trash && sudo rm -fr ~/.Trash'
 
 
 
@@ -17031,7 +16875,7 @@ alias xtop='xterm -fn 6x13 -bg LightSlateGray -fg black -e top &'
 ######################################################################################################################################################
 
 
-
+alias ggit='sudo git'
 
 
 

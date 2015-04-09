@@ -1,0 +1,6 @@
+#! /bin/bash
+
+yaourt -S eclipse
+yaourt -S frc-2015
+yaourt -S vim
+sudo git clone https://DannyMoses555@bitbucket.org/DannyMoses555/configs.git 
